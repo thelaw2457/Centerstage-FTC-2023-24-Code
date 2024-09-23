@@ -2,12 +2,16 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Blinker;
 import com.qualcomm.robotcore.hardware.Gyroscope;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.HardwareDevice;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import com.qualcomm.robotcore.hardware.Blinker;
 import com.qualcomm.robotcore.hardware.Gyroscope;
@@ -45,6 +49,9 @@ public class CenterstageTeleOp extends LinearOpMode {
     TouchSensor downStopButton;
     TouchSensor upStopButton;
 
+    DistanceSensor rightDistance;
+    DistanceSensor leftDistance;
+
     Servo pixelClampServo;
     Servo droneAngleServo;
     Servo droneLaunchServo;
@@ -57,7 +64,7 @@ public class CenterstageTeleOp extends LinearOpMode {
 
         int armPosition = 0;
         int elevatorPosition = 0;
-        double magicBoxPosition = .225;
+        double magicBoxPosition = .402;
         double nosePosition = .150;
 
         control_Hub = hardwareMap.get(Blinker.class, "Control Hub");
@@ -80,6 +87,9 @@ public class CenterstageTeleOp extends LinearOpMode {
 
         downStopButton = hardwareMap.get(TouchSensor.class, "downStopButton");
         upStopButton = hardwareMap.get(TouchSensor.class, "upStopButton");
+
+        rightDistance = hardwareMap.get(DistanceSensor.class, "rightDistance");
+        leftDistance = hardwareMap.get(DistanceSensor.class, "leftDistance");
 
         motorFrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
         motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -177,7 +187,7 @@ public class CenterstageTeleOp extends LinearOpMode {
                 armMotor.setPower(.7);
                 boxAngleServo.setPosition(magicBoxPosition);
                 if (armPosition < 90){
-                    magicBoxPosition = .225;
+                    magicBoxPosition = .402;
                     pixelClampServo.setPosition(1);
                     boxAngleServo.setPosition(magicBoxPosition);
                 }
@@ -198,7 +208,7 @@ public class CenterstageTeleOp extends LinearOpMode {
             }
 
             if (gamepad2.a && downStopButton.isPressed()) {
-                magicBoxPosition = .225;
+                magicBoxPosition = .402;
                 armPosition = 0;
                 pixelClampServo.setPosition(1);
                 armMotor.setTargetPosition(armPosition);
@@ -249,8 +259,8 @@ public class CenterstageTeleOp extends LinearOpMode {
             if (gamepad2.left_bumper) {
                 magicBoxPosition = magicBoxPosition - .001;
                 boxAngleServo.setPosition(magicBoxPosition);
-            } if (magicBoxPosition <= .225) {
-                magicBoxPosition = .225;
+            } if (magicBoxPosition <= .402) {
+                magicBoxPosition = .402;
             }
 
             if (gamepad1.guide) {
@@ -264,6 +274,8 @@ public class CenterstageTeleOp extends LinearOpMode {
             telemetry.addData("Launch Position", droneLaunchServo.getPosition());
             telemetry.addData("Snot Rocket Position", launchServo2.getPosition());
             telemetry.addData("Elevator Behavior", elevatorMotor.getZeroPowerBehavior());
+            telemetry.addData("Right Side Distance", rightDistance.getDistance(DistanceUnit.INCH));
+            telemetry.addData("Left Side Distance", leftDistance.getDistance(DistanceUnit.INCH));
             telemetry.update();
 
         }
